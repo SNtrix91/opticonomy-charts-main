@@ -1,0 +1,53 @@
+replicaCount: 1
+
+image:
+  repository: dimkobo/opticonomy-testnet-node
+  tag: amd64
+  pullPolicy: Always
+
+nodeConfig:
+  name: rpcnode
+  basePath: /data/{{ .Values.nodeConfig.name }}
+  chain: ./opticonomy-public-testnet-raw.json
+  keyFile: ./scripts/{{ .Values.nodeConfig.name }}_keyfile
+  keystorePath: ./scripts/{{ .Values.nodeConfig.name }}_keystore
+  port: 30533
+  rpcPort: 9953
+  wsPort: 9964
+  telemetryUrl: "wss://telemetry.polkadot.io/submit/ 0"
+  pruning: archive
+  bootnodes: /dns/bootnode1.opticonomy.com/tcp/30333/p2p/12D3KooWEDRxtuno5Psd4gBXh1RzouWQPUBAaCiCTkkYrKoTBjYP
+  validator: false
+  rpcCors: all
+  rpcMethods: Safe
+  exposeExternal:
+    ws: true
+    rpc: true
+
+archive:
+  enabled: false
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "2"
+    memory: "2Gi"
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+service:
+  type: LoadBalancer
+  p2pPort: 30533
+
+env:
+  - name: SEED
+    valueFrom:
+      secretKeyRef:
+        name: node-seeds
+        key: SEED
+  - name: NODE_NAME
+    value: {{ .Values.nodeConfig.name }}

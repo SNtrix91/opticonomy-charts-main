@@ -1,0 +1,53 @@
+replicaCount: 1
+
+image:
+  repository: dimkobo/opticonomy-testnet-node
+  tag: amd64
+  pullPolicy: Always
+
+nodeConfig:
+  name: validatornode
+  basePath: /data/validatornode
+  chain: ./opticonomy-testnet/opticonomy-public-testnet-raw.json
+  keyFile: ./scripts/validatornode_keyfile
+  keystorePath: ./scripts/validatornode_keystore
+  port: 30433
+  rpcPort: 9943
+  wsPort: 9954
+  telemetryUrl: "wss://telemetry.polkadot.io/submit/ 0"
+  pruning: 2000
+  bootnodes: /dns/bootnode1.opticonomy.com/tcp/30333/p2p/12D3KooWEDRxtuno5Psd4gBXh1RzouWQPUBAaCiCTkkYrKoTBjYP
+  validator: true
+  rpcCors: null
+  rpcMethods: Safe
+  exposeExternal:
+    ws: false
+    rpc: false
+  
+archive:
+  enabled: false
+
+resources:
+  limits:
+    cpu: "0.5"
+    memory: "1Gi"
+  requests:
+    cpu: "0.5"
+    memory: "1Gi"
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+service:
+  type: ClusterIP
+  p2pPort: 30433
+
+env:
+  - name: SEED
+    valueFrom:
+      secretKeyRef:
+        name: node-seeds
+        key: SEED
+  - name: NODE_NAME
+    value: "validatornode"
